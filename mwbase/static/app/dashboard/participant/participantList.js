@@ -7,10 +7,11 @@
    * @constructor
    */
   angular.module('mwachx').controller('ParticipantListController',
-  ['$scope','$stateParams','mwachxAPI','mwParticipantFilterService',
-  function ($scope, $stateParams, mwachxAPI,participantService) {
+  ['$scope','$stateParams','mwachxAPI','mwParticipantFilterService', 'mwachxDjango',
+  function ($scope, $stateParams, mwachxAPI,participantService, mwachxDjango) {
 
       $scope.query = participantService.query;
+      $scope.filter_list = mwachxDjango.filter_list;
 
       var query_functions = {
         study_group:{
@@ -24,8 +25,8 @@
             other:function(participant){ return participant.status !== 'Pregnant' && participant.status !== 'Post-Partum'},
         },
         active:{
-            true:function(participant){ return participant.active},
-            false:function(participant){ return !participant.active},
+            true:function(participant){ return participant.active == 'active'},
+            false:function(participant){ return participant.active !== 'active'},
         }
       };
 
@@ -53,7 +54,7 @@
 
       $scope.participantFilter = function(participant) {
           if ($scope.query.text == '') {
-            var filter_buttons = ['study_group','status', 'active'].every( function(query) {
+            var filter_buttons = $scope.filter_list.every( function(query) {
               return compare_participant(participant,query);
             })
             return filter_buttons;
